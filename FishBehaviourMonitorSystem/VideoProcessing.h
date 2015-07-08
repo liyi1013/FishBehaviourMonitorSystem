@@ -62,8 +62,9 @@ private:
 	cv::VideoCapture  _cap;   //
 	//IplImage     *_frame;     //2捕捉到的一帧图像 | frame = cvQueryFrame(capture);if (frame)
 	cv::Mat      _frame;
+	cv::Mat      _p_temp;
 	IplImage     *_target_Img;//4储存处理后的图像
-	IplImage     *_p_temp;    //3中间存储图片
+	//IplImage     *_p_temp;    //3中间存储图片
 
 	int _num_of_frames = 0;
 
