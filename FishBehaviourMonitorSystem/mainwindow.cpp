@@ -7,7 +7,8 @@ MainWindow::MainWindow(QWidget *parent, VideoProcessing *vp, QTimer *_t, SystemS
 		_timer = new QTimer(this);
 	}
 
-	ui_img_view = new ImgShowWidget_opencv(this);
+	//ui_img_view = new ImgShowWidget_opencv(this);
+	ui_img_view = new ImgShowWidget_Mat(this);
 	ui_img_view->set_size(QSize(320 * 1.5,240 * 1.5));
 
 	ui_warning_view = new WarningViewWidget(this);
@@ -20,17 +21,16 @@ MainWindow::MainWindow(QWidget *parent, VideoProcessing *vp, QTimer *_t, SystemS
 	ui_data_view_8 = new DataShowWidget(this);
 	ui_data_view_9 = new DataShowWidget(this);
 
-
+	// [1] 
 	setupUi();
-
+	// [2]
 	createStatusBar();
-	//[4]动作初始化
+	// [3]动作初始化
 	createActions();
-	//[5]
+	// [4]
 	createMenus();
-	//[6]
+	// [5]
 	setupToolBar();
-
 
 	this->setWindowTitle(tr("水质检测系统 V1.2"));
 	this->setWindowIcon(QIcon("images/system.ico"));
@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent, VideoProcessing *vp, QTimer *_t, SystemS
 	_video_processing->attach(this);
 
 	recodeAct->setEnabled(false);
-	endAct->setEnabled(false);
+	   endAct->setEnabled(false);
 
 }
 
@@ -47,6 +47,7 @@ MainWindow::~MainWindow()
 
 }
 
+// [1] 
 void MainWindow::setupUi()
 {
 	QHBoxLayout *hLayout_main = new QHBoxLayout(this);
@@ -129,12 +130,13 @@ void MainWindow::setupUi()
 	dock_set->setMinimumWidth(200);
 }
 
-
+// [2]
 void MainWindow::createStatusBar()
 {
 	statusBar()->showMessage(tr("就绪"));
 }
 
+// [3]动作初始化
 void MainWindow::createActions()
 {
 	opencamera = new QAction(QIcon("images/open_camera.ico"), tr("&打开摄像头"), this);
@@ -184,6 +186,7 @@ void MainWindow::createActions()
 	connect(recodeAct, SIGNAL(triggered()), this, SLOT(record()));
 }
 
+// [4]
 void MainWindow::createMenus(){
 	fileMenu = menuBar()->addMenu(tr("&文件"));
 	fileMenu->addAction(opencamera);
@@ -211,6 +214,7 @@ void MainWindow::createMenus(){
 	helpMenu->addAction(aboutAct);
 }
 
+// [5]
 void MainWindow::setupToolBar()
 {
 	fileToolBar = addToolBar(tr("File"));
@@ -226,8 +230,13 @@ void MainWindow::setupToolBar()
 	setToolBar->addAction(setAct);
 }
 
+///
 void MainWindow::updata_img(IplImage *src){
-	this->ui_img_view->updata_img(src);
+	//this->ui_img_view->update_img(src);
+}
+
+void MainWindow::updata_img(cv::Mat &mat){
+	this->ui_img_view->update_img(mat);
 }
 
 void MainWindow::updata_data(size_t modeIndex, double data){
@@ -246,6 +255,7 @@ void MainWindow::updata_data(size_t modeIndex, double data){
 		break;
 	}
 }
+///
 
 void MainWindow::about()
 {
@@ -256,7 +266,7 @@ void MainWindow::about()
 	msgBox.exec();
 }
 
-//* slots
+// slots
 void MainWindow::open_camera(){
 	if (!this->_video_processing->open_camera()){
 		QMessageBox::information(this, tr("Information"), tr("Can notopen the camera !"));

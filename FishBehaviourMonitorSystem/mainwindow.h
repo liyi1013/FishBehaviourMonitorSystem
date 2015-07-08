@@ -2,7 +2,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtWidgets/QMainWindow>
+#include <QtWidgets\QMainWindow>
+#include <QtWidgets\qaction.h>
+#include <QtWidgets\qdockwidget.h>
+#include <QtWidgets\qstatusbar.h>
+#include <QtWidgets\qmenu.h>
+#include <QtWidgets\qtoolbar.h>
+
+class QMessageBox;
 
 #include"VideoProcessing.h"
 
@@ -60,7 +67,8 @@ private:
 
 private:
 	void setupUi();
-	ImgShowWidget_opencv *ui_img_view;
+	//ImgShowWidget_opencv *ui_img_view;
+	ImgShowWidget_Mat *ui_img_view;
 
 public:
 	WarningViewWidget *ui_warning_view;
@@ -83,8 +91,9 @@ private:
 	QDockWidget *dock_set;
 	QDockWidget *dock_img_process_set;
 
-public:	
+public:	//给 video_processing 调用
 	void updata_img(IplImage *src);//观察vp的变化->显示图像
+	void updata_img(cv::Mat &mat); //观察vp的变化->显示图像
 	void updata_data(size_t modeIndex, double data); // 
 
 public slots:
@@ -104,10 +113,10 @@ public slots:
 
 private:
 	VideoProcessing* const _video_processing;
-	SystemSet* const _sys_set;
-	SysDB* const _sys_db;
+	      SystemSet* const _sys_set;
+	          SysDB* const _sys_db;
 
-	QTimer *_timer=nullptr;
+	       QTimer* _timer=nullptr;
 	ImgProcessSet* _img_process_set;
 };
 

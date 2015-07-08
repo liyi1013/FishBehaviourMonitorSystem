@@ -62,7 +62,7 @@ ImgShowWidget_opencv::~ImgShowWidget_opencv()
 	}
 }
 
-void ImgShowWidget_opencv::updata_img(const IplImage *src)
+void ImgShowWidget_opencv::update_img(const IplImage *src)
 {
 	//观察vp的变化->显示图像
 	/*如果没有qimg*/
@@ -81,3 +81,29 @@ void ImgShowWidget_opencv::updata_img(const IplImage *src)
 	}
 }
 
+
+//----------------------------------------------------------------
+
+
+ImgShowWidget_Mat::ImgShowWidget_Mat(QWidget *parent)
+	:ImgShowWidget(parent)
+{
+	_qimg = nullptr;
+	_iplImg = nullptr;
+}
+
+ImgShowWidget_Mat::~ImgShowWidget_Mat()
+{
+	if (_qimg){
+		delete _qimg;
+	}
+	if (_iplImg){
+		cvReleaseImageHeader(&_iplImg);
+	}
+}
+
+void ImgShowWidget_Mat::update_img(cv::Mat &mat)
+{
+	QImage &&qimg = Mat2QImage(mat);
+	this->show_img(&qimg);
+}

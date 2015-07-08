@@ -9,6 +9,7 @@
 
 #include <cv.h>     //iplimage
 #include <highgui.h>//CvCapture
+#include <opencv2\opencv.hpp> //cv::VideoCapture
 
 #include"mode_processing.h"
 #include"ImgProcessSet.h"
@@ -24,6 +25,7 @@ public:
 	~VideoProcessing();
 
 	void attach(MainWindow *Object);//将MainWindow 与 VideoProcessing 关联 //观察者调用
+
 private:
 	void notify();// 图像 或 数据 改变了，向观察者mainwindow 发出通知 
 	void send_data(size_t modeIndex, double data);
@@ -57,7 +59,9 @@ private:
 
 	//imgs
 	CvCapture    *_capture;   //1视频流捕捉器
-	IplImage     *_frame;     //2捕捉到的一帧图像 | frame = cvQueryFrame(capture);if (frame)
+	cv::VideoCapture  _cap;   //
+	//IplImage     *_frame;     //2捕捉到的一帧图像 | frame = cvQueryFrame(capture);if (frame)
+	cv::Mat      _frame;
 	IplImage     *_target_Img;//4储存处理后的图像
 	IplImage     *_p_temp;    //3中间存储图片
 

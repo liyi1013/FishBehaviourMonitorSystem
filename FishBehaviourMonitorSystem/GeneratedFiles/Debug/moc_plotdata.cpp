@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'plotdata.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.4.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'plotdata.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.4.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,11 +20,11 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_plotData_t {
     QByteArrayData data[3];
-    char stringdata[19];
+    char stringdata0[19];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_plotData_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_plotData_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_plotData_t qt_meta_stringdata_plotData = {
@@ -64,6 +64,7 @@ void plotData::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         plotData *_t = static_cast<plotData *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->openfile(); break;
         default: ;
@@ -86,7 +87,7 @@ const QMetaObject *plotData::metaObject() const
 void *plotData::qt_metacast(const char *_clname)
 {
     if (!_clname) return Q_NULLPTR;
-    if (!strcmp(_clname, qt_meta_stringdata_plotData.stringdata))
+    if (!strcmp(_clname, qt_meta_stringdata_plotData.stringdata0))
         return static_cast<void*>(const_cast< plotData*>(this));
     return QWidget::qt_metacast(_clname);
 }

@@ -9,6 +9,7 @@ VideoProcessing::VideoProcessing(QObject *parent, SystemSet *set, SysDB* sys_db,
 	_mode_processing_wp = new WPmode_processing(img_p_set);
 	_mode_processing_Cluster = new Clustermode_processing(img_p_set);
 }
+
 void VideoProcessing::attach(MainWindow *Object)
 {
 	_main_window = Object;
@@ -51,17 +52,13 @@ IplImage* VideoProcessing::ImgProcessing(IplImage *src, IplImage *dst, IplImage 
 
 bool VideoProcessing::open_camera()
 {
-	_capture = cvCaptureFromCAM(0);
-	if (!_capture){
-		//qDebug() << "Can not open the camera.";
+	//_capture = cvCaptureFromCAM(0);
+	_cap.open(0);
+	if (!_cap.isOpened()){
 		return false;
 	} else {
-		_frame = cvQueryFrame(_capture);//从CvCapture中获得一帧
-		if (!_frame){
-			//qDebug() << "Can not get frame from the capture.\n";
-			return false;
-		}
-		CvSize img_size = cvSize(_frame->width, _frame->height);
+		_cap >> _frame;
+		CvSize img_size = _frame.size();
 		//中间存储图像
 		_p_temp = cvCreateImage(img_size, IPL_DEPTH_8U, 1);
 		return true;
