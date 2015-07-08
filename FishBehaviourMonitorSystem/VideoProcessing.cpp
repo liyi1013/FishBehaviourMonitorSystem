@@ -2,6 +2,29 @@
 #include "mainwindow.h"
 #include"SystemSet.h"
 
+int element_shape = cv::MORPH_RECT;
+
+// 开闭运算
+static void OpenClose(cv::Mat &src, cv::Mat &dst, int n=6-10)
+{
+	int an = n > 0 ? n : -n;
+	cv::Mat element = cv::getStructuringElement(element_shape, cv::Size(an * 2 + 1, an * 2 + 1), cv::Point(an, an));
+	if (n < 0)
+		morphologyEx(src, dst, CV_MOP_OPEN, element);
+	else
+		morphologyEx(src, dst, CV_MOP_CLOSE, element);
+}
+// 腐蚀膨胀
+static void ErodeDilate(cv::Mat &src, cv::Mat &dst, int n = 9 - 10)
+{
+	int an = n > 0 ? n : -n;
+	cv::Mat element = cv::getStructuringElement(element_shape, cv::Size(an * 2 + 1, an * 2 + 1), cv::Point(an, an));
+	if (n < 0)
+		erode(src, dst, element);
+	else
+		dilate(src, dst, element);
+}
+
 VideoProcessing::VideoProcessing(QObject *parent, SystemSet *set, SysDB* sys_db, ImgProcessSet  *img_p_set)
 	:QObject(parent), _fps(15), _codec(CV_FOURCC('D', 'I', 'V', 'X')), _sys_set(set), _sys_db(sys_db), _img_process_set(img_p_set)
 {
@@ -50,17 +73,40 @@ IplImage* VideoProcessing::ImgProcessing(IplImage *src, IplImage *dst, IplImage 
 	return dst;
 }
 
+cv::Mat VideoProcessing::ImgProcessing(cv::Mat &src, cv::Mat &dst, cv::Mat &img_draw)
+{
+	// 图片预处理，转化成灰度图像
+	if (src.channels() > 1){
+		cvtColor(src, dst, CV_BGR2GRAY);  // 彩色图像转化成灰度图像
+	}
+	
+	GaussianBlur(dst, dst, cv::Size(5,5), 0, 0); //高斯滤波
+
+	//bitwise_xor(Scalar(255, 0, 0, 0), dst, dst);//xor,颜色取反
+
+	// 图片 阈值分割
+	//cvThreshold(dst, dst, _img_process_set->get_segment_threshold(), 255, CV_THRESH_BINARY); //取阀值把图像转为二值图像
+	threshold(dst, dst, _img_process_set->get_segment_threshold(), 255, 0);//阈值分割
+
+	OpenClose(dst, dst);
+
+	ErodeDilate(dst, dst);
+
+	//颜色反转
+	//cvNot(dst, dst);
+
+	return dst;
+}
+
 bool VideoProcessing::open_camera()
 {
-	//_capture = cvCaptureFromCAM(0);
 	_cap.open(0);
 	if (!_cap.isOpened()){
 		return false;
 	} else {
 		_cap >> _frame;
 		CvSize img_size = _frame.size();
-		//中间存储图像
-		_p_temp = cvCreateImage(img_size, IPL_DEPTH_8U, 1);
+		cvtColor(_frame, _p_temp, CV_BGR2GRAY);
 		return true;
 	}
 }
@@ -68,18 +114,14 @@ bool VideoProcessing::open_camera()
 bool VideoProcessing::open_file(const char* file_name)
 {
 	//_video_file_name = file_name;
-	_capture = cvCaptureFromFile(file_name);
-	if (!_capture){
-		//std::cout << "Can not open the file:"<<file_name<<endl;
+	_cap.open(file_name);
+	if (!_cap.isOpened()){
 		return false;
 	} else {
-		_frame = cvQueryFrame(_capture);
-		if (!_frame){
-			//std::cout << "Can not get frame from the capture." << std::endl;
-			return false;
-		}
-		CvSize img_size = cvSize(_frame->width, _frame->height);
-		_p_temp = cvCreateImage(img_size, IPL_DEPTH_8U, 1);  //轮廓效果前景帧
+		_cap >> _frame;
+		CvSize img_size = _frame.size();
+		cvtColor(_frame, _p_temp, CV_BGR2GRAY);
+
 		ImgProcessing(_frame, _p_temp, _frame);
 		this->notify();
 		return true;
@@ -89,23 +131,21 @@ bool VideoProcessing::open_file(const char* file_name)
 void VideoProcessing::time_out_todo_1()
 {
 	//从CvCapture中获得一帧
-	_frame = cvQueryFrame(_capture);
-	if (!_frame){
-		//qDebug() << "Can not get frame from the capture.\n";
-	} else {
+	_cap >> _frame;
+	{
 		// 如果开始处理
 		if (_isPrecess){
 			ImgProcessing(_frame, _p_temp, _frame);
 			if (_img_process_set->get_num_fish() == 1){
-				double speed = _mode_processing->execute(_p_temp, _frame, _img_process_set->get_min_area());
-				double wp = _mode_processing_wp->execute(_p_temp, _frame, _img_process_set->get_min_area());
-				send_data(1, speed / (640 / this->_sys_set->get_realLength()));
-				send_data(2, wp);
+				//double speed = _mode_processing->execute(_p_temp, _frame, _img_process_set->get_min_area());
+				//double wp = _mode_processing_wp->execute(_p_temp, _frame, _img_process_set->get_min_area());
+				//send_data(1, speed / (640 / this->_sys_set->get_realLength()));
+				//send_data(2, wp);
 			}
 			else if (_img_process_set->get_num_fish() > 1)
 			{
-				double r = _mode_processing_Cluster->execute(_p_temp, _frame, _img_process_set->get_min_area());
-				send_data(3, r);
+				//double r = _mode_processing_Cluster->execute(_p_temp, _frame, _img_process_set->get_min_area());
+				//send_data(3, r);
 			}
 
 			// 如果开始记录
@@ -125,7 +165,7 @@ void VideoProcessing::time_out_todo_1()
 
 void VideoProcessing::notify()// 图像 或 数据 改变了，向观察者mainwindow 发出通知
 {
-	if (_main_window && _frame)
+	if (_main_window)
 	{
 		_main_window->updata_img(_frame);
 	}
@@ -246,12 +286,13 @@ bool VideoProcessing::save_video(){
 		return false;
 	}
 	else{
-		if (!_frame)
+		if (_frame.empty())
 		{
 			puts("Can not get frame from the capture.");
 			return false;
 		}
-		if (!cvWriteFrame(_video_Writer, _frame)){
+		//if (!cvWriteFrame(_video_Writer, _frame))
+		{
 
 			puts("save video fail\n");
 			return false;
@@ -308,7 +349,7 @@ bool VideoProcessing::record(){
 			""/*remark*/))
 		{
 			_num_of_frames = 1;
-			_video_Writer = cvCreateVideoWriter(new_video_name.toStdString().c_str(), _codec, _fps, { _frame->width, _frame->height }, 1);
+			//_video_Writer = cvCreateVideoWriter(new_video_name.toStdString().c_str(), _codec, _fps, { _frame->width, _frame->height }, 1);
 
 			if (_img_process_set->get_num_fish() == 1){
 				_data_writer_1.open((new_datafile_name + "_1.txt").toStdString());

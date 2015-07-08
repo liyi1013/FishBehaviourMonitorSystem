@@ -33,6 +33,7 @@ private:
 private:
 	// Í¼Æ¬Ô¤´¦Àí º¯Êý
 	IplImage * ImgProcessing(IplImage *src, IplImage *dst, IplImage *img_draw);
+	cv::Mat ImgProcessing(cv::Mat &src, cv::Mat &dst, cv::Mat &img_draw);
 	bool save_video();
 
 public:
