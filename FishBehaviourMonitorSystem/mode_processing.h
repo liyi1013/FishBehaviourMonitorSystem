@@ -18,7 +18,8 @@ public:
 	~mode_processing();
 
 	/*纯虚函数--接口*/
-	virtual double execute(IplImage *src, IplImage *img_draw, int minContour) = 0;
+	virtual double execute( cv::Mat *src,  cv::Mat *img_draw, int minContour) = 0;
+	virtual double execute(IplImage *src, IplImage *img_draw, int minContour) = 0; // c++ 风格
 	//virtual double execute(IplImage *src, IplImage *img_draw) = 0;
 	ImgProcessSet  *_img_process_set;
 };
@@ -32,6 +33,7 @@ public:
 	Speedmode_processing(ImgProcessSet  *img_p_set) :mode_processing(img_p_set){};
 
 	/*virtual*/double execute(IplImage *src, IplImage *img_draw, int minContour);
+	/*virtual*/double execute(cv::Mat *src, cv::Mat *img_draw, int minContour);// c++ 风格
 	/*计算速度，移动窗口法*/
 private:
 	CvPoint            _old_point;
@@ -41,6 +43,7 @@ private:
 	//std::vector<CvPoint> fishCenter;
 
 	CvPoint compute_Contour(IplImage *src, IplImage *img_draw, int minContour);
+	CvPoint compute_Contour(cv::Mat *src, cv::Mat *img_draw, int minContour);// c++ 风格
 
 	double compute_speed(CvPoint fishCenter);
 };
