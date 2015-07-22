@@ -29,8 +29,9 @@ VideoProcessing::VideoProcessing(QObject *parent, SystemSet *set, SysDB* sys_db,
 	:QObject(parent), _fps(15), _codec(CV_FOURCC('D', 'I', 'V', 'X')), _sys_set(set), _sys_db(sys_db), _img_process_set(img_p_set)
 {
 	_mode_processing = new Speedmode_processing(img_p_set);
-	//_mode_processing_wp = new WPmode_processing(img_p_set);
-	//_mode_processing_Cluster = new Clustermode_processing(img_p_set);
+	//todo:2015-07-22-11:21
+	_mode_processing_wp = new WPmode_processing(img_p_set);
+	_mode_processing_Cluster = new Clustermode_processing(img_p_set);
 }
 
 void VideoProcessing::attach(MainWindow *Object)

@@ -54,7 +54,7 @@ class WPmode_processing :public mode_processing
 {
 public:
 	WPmode_processing(ImgProcessSet  *img_p_set) :mode_processing(img_p_set){ _old_fish.center = { 0, 0 }; };
-
+	virtual    double execute(cv::Mat *src, cv::Mat *img_draw, int minContour);
 	/*virtual*/double execute(IplImage *src, IplImage *img_draw, int minContour);
 
 	/*计算速度，移动窗口法*/
@@ -75,7 +75,7 @@ class Clustermode_processing :public mode_processing
 {
 public:
 	Clustermode_processing(ImgProcessSet  *img_p_set) :mode_processing(img_p_set){};
-
+	virtual    double execute(cv::Mat *src, cv::Mat *img_draw, int minContour);
 	/*virtual*/double execute(IplImage *src, IplImage *img_draw, int minContour);
 
 private:
