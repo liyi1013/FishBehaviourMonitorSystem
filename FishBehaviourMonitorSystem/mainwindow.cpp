@@ -350,10 +350,25 @@ void MainWindow::DB_manage()
 void MainWindow::record()
 {
 	if (this->_video_processing->_isPrecess){
+
+		/*todo：
+		// 当硬盘空间不够的时候，删除一些以前的视频数据
+		QString dir = this->_sys_set->...
+		unsigned long long freeBytesToCaller = 0, totalBytes = 0, freeBytes = 0;
+		bool b;
+		b = GetDiskFreeSpaceEx(QString(dir[0] + ":/").toStdWString().c_str(), (PULARGE_INTEGER)&freeBytesToCaller,
+			(PULARGE_INTEGER)&totalBytes, (PULARGE_INTEGER)&freeBytes);
+
+		if (b){
+			ui_remaining_space->setText(tr("剩余空间：<font color='#006600'>%0GB").arg(freeBytesToCaller / 1024.0 / 1024.0 / 1024.0));
+		}
+		*/
 		NewMonitor_dlg *new_monitor_dlg = new NewMonitor_dlg();
 		int res = new_monitor_dlg->exec();
+
 		if (res == QDialog::Accepted){//确定按钮
 			if (_video_processing->record()){
+
 				recodeAct->setIcon(QIcon("images/recording.ico"));
 				statusBar()->showMessage(tr("正在记录视频与数据"));
 
