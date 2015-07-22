@@ -29,8 +29,8 @@ VideoProcessing::VideoProcessing(QObject *parent, SystemSet *set, SysDB* sys_db,
 	:QObject(parent), _fps(15), _codec(CV_FOURCC('D', 'I', 'V', 'X')), _sys_set(set), _sys_db(sys_db), _img_process_set(img_p_set)
 {
 	_mode_processing = new Speedmode_processing(img_p_set);
-	_mode_processing_wp = new WPmode_processing(img_p_set);
-	_mode_processing_Cluster = new Clustermode_processing(img_p_set);
+	//_mode_processing_wp = new WPmode_processing(img_p_set);
+	//_mode_processing_Cluster = new Clustermode_processing(img_p_set);
 }
 
 void VideoProcessing::attach(MainWindow *Object)
@@ -40,8 +40,8 @@ void VideoProcessing::attach(MainWindow *Object)
 
 VideoProcessing::~VideoProcessing()
 {
-	if (_video_Writer){
-		cvReleaseVideoWriter(&_video_Writer);
+	if (_video_Writer.isOpened()){
+		_video_Writer.release();
 	}
 
 	_data_writer_1.close();
@@ -151,11 +151,13 @@ void VideoProcessing::time_out_todo_1()
 			// 如果开始记录
 			if (_isPrecess && _isRecord)
 			{
-				if (_video_Writer){
+				if (_video_Writer.isOpened()){
 					save_video();//保存视频
 				}
 				else
-				{}
+				{
+					this->_main_window->statusBar()->showMessage(tr("无法保存视频"));
+				}
 			}
 		}
 		++_num_of_frames;
@@ -280,25 +282,13 @@ void VideoProcessing::send_data(size_t modeIndex, double data){
 	}
 }
 
-bool VideoProcessing::save_video(){
-	if (!_video_Writer /*|| _video_save_name.empty()*/){
-		puts("set video_save fisrt.\n");
+inline bool VideoProcessing::save_video(){
+	if (_frame.empty())
+	{
 		return false;
 	}
-	else{
-		if (_frame.empty())
-		{
-			puts("Can not get frame from the capture.");
-			return false;
-		}
-		//if (!cvWriteFrame(_video_Writer, _frame))
-		{
-
-			puts("save video fail\n");
-			return false;
-		}
-		return true;
-	}
+	_video_Writer << _frame;
+	return true;
 }
 
 void VideoProcessing::process_end()
@@ -313,11 +303,9 @@ void VideoProcessing::process_end()
 	_data_writer_3.close();
 
 
-	if (_video_Writer){
-		cvReleaseVideoWriter(&_video_Writer);
+	if (_video_Writer.isOpened()){
+		_video_Writer.release();
 	}
-	_video_Writer = nullptr;
-
 	_sys_db->InsertNewRecord_endtime(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm"), _video_id);
 }
 
@@ -349,17 +337,20 @@ bool VideoProcessing::record(){
 			""/*remark*/))
 		{
 			_num_of_frames = 1;
-			//_video_Writer = cvCreateVideoWriter(new_video_name.toStdString().c_str(), _codec, _fps, { _frame->width, _frame->height }, 1);
-
-			if (_img_process_set->get_num_fish() == 1){
-				_data_writer_1.open((new_datafile_name + "_1.txt").toStdString());
-				_data_writer_2.open((new_datafile_name + "_2.txt").toStdString());
+			if (_video_Writer.open(new_video_name.toStdString(), _codec, _fps, _frame.size(), 1)){
+				if (_img_process_set->get_num_fish() == 1){
+					_data_writer_1.open((new_datafile_name + "_1.txt").toStdString());
+					_data_writer_2.open((new_datafile_name + "_2.txt").toStdString());
+				}
+				else if (_img_process_set->get_num_fish() > 1)
+				{
+					_data_writer_3.open((new_datafile_name + "_3.txt").toStdString());
+				}
+				return true;
 			}
-			else if (_img_process_set->get_num_fish() > 1)
-			{
-				_data_writer_3.open((new_datafile_name + "_3.txt").toStdString());
+			else{
+				QMessageBox::information(nullptr, tr("警告"), tr("无法保存视频!"));
 			}
-			return true;
 		}
 	}
 	return false;

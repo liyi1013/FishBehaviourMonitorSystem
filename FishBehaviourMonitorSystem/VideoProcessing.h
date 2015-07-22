@@ -6,14 +6,17 @@
 #include <fstream>
 
 #include <QtCore\qobject.h>
+#include <QMessageBox>
 
 #include <cv.h>     //iplimage
 #include <highgui.h>//CvCapture
 #include <opencv2\opencv.hpp> //cv::VideoCapture
+#include <opencv2\core\core.hpp>
 
 #include"mode_processing.h"
 #include"ImgProcessSet.h"
 
+//class QMessageBox;
 class MainWindow;
 class SystemSet;
 class SysDB;
@@ -32,9 +35,9 @@ private:
 
 private:
 	// 图片预处理 函数
-	IplImage * ImgProcessing(IplImage *src, IplImage *dst, IplImage *img_draw);
-	cv::Mat ImgProcessing(cv::Mat &src, cv::Mat &dst, cv::Mat &img_draw);
-	bool save_video();
+	IplImage *ImgProcessing(IplImage *src, IplImage *dst, IplImage *img_draw);
+	cv::Mat   ImgProcessing(cv::Mat &src, cv::Mat &dst, cv::Mat &img_draw);
+	bool      save_video();
 
 public:
 	bool open_file(const char* file_name);//0
@@ -79,7 +82,8 @@ private:
 	std::ofstream _data_writer_2;
 	std::ofstream _data_writer_3;
 	// CvVideoWriter*_video_Writer; 
-	CvVideoWriter*_video_Writer=nullptr;   // 存储视频到本地
+	//CvVideoWriter*_video_Writer=nullptr;   // 存储视频到本地
+	cv::VideoWriter _video_Writer;   // 存储视频到本地
 	QString   _video_name;         //   视频存储——文件名，标识视频名称，以及对应的数据名称如“001_201505200951”
 	const int _fps;                //   视频存储——帧率
 	const int _codec;

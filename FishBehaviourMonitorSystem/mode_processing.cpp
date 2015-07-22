@@ -92,6 +92,7 @@ CvPoint Speedmode_processing::compute_Contour(IplImage *src, IplImage *img_draw,
 	cvReleaseMemStorage(&_stor);// 内存泄漏是这里的问题。之前分配空间在Init（）中，没有cvReleaseMemStorage(&_stor);，内存泄漏	
 	return fish_centerpoint;
 }
+
 CvPoint Speedmode_processing::compute_Contour(cv::Mat *src, cv::Mat *img_draw, int minContour){
 
 	vector<vector<Point> > contours;
@@ -99,11 +100,9 @@ CvPoint Speedmode_processing::compute_Contour(cv::Mat *src, cv::Mat *img_draw, i
 
 	cv::findContours(*src, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-	//////////////////////////////////////////////////////////////////////////////////
-
-	// 声明
 	int num_cont = contours.size();      // 轮廓数
 	CvPoint   fish_centerpoint;
+
 	// 计算得到每一条鱼的中心， 保持在 _fishCenter 中
 	for (int i = 1; i < num_cont;++i)
 	{ 
@@ -117,30 +116,17 @@ CvPoint Speedmode_processing::compute_Contour(cv::Mat *src, cv::Mat *img_draw, i
 			continue;
 		}
 
-		//todo : 2015-07-10 改到这里为止
-
-		cvDrawContours(img_draw, _cont, CV_RGB(0, 255, 0), CV_RGB(255, 0, 0), 0);
+		drawContours(*img_draw, contours, i, CV_RGB(0, 255, 0), 1, 8);
 
 		// 以下程序块：计算、保存每个轮廓（鱼）的重心 (输入cont、num_cont，输出 _fishCenter)
 		{
-			CvMoments moments;   //??
-			cvMoments(_cont, &moments, 0);
+			Moments m = moments(contours[i]);
 			// 计算重心坐标  这里的重心指的是一条鱼的重心（轮廓的重心）
-			float cx, cy;         // 定义重心坐标
-			cx = cvRound(moments.m10 / moments.m00);
-			cy = cvRound(moments.m01 / moments.m00);  //不变矩。。质心坐标？
-			// 保存各条鱼的重心坐标 到 xy 中	
-
-			fish_centerpoint.x = int(cx);
-			fish_centerpoint.y = int(cy);
-			//fishCenter.push_back(fish_centerpoint);
+			fish_centerpoint.x = m.m10 / m.m00;
+			fish_centerpoint.y = m.m01 / m.m00;
 		}
-
-		// 指向下一个轮廓
-		_cont = _cont->h_next;
 		++num_cont;
 	}
-	cvReleaseMemStorage(&_stor);// 内存泄漏是这里的问题。之前分配空间在Init（）中，没有cvReleaseMemStorage(&_stor);，内存泄漏	
 	return fish_centerpoint;
 }
 

@@ -43,7 +43,8 @@ private:
 	//std::vector<CvPoint> fishCenter;
 
 	CvPoint compute_Contour(IplImage *src, IplImage *img_draw, int minContour);
-	CvPoint compute_Contour(cv::Mat *src, cv::Mat *img_draw, int minContour);// c++ 风格
+	// 计算一条鱼的重心？？？c++ 风格
+	CvPoint compute_Contour(cv::Mat *src, cv::Mat *img_draw, int minContour);
 
 	double compute_speed(CvPoint fishCenter);
 };
