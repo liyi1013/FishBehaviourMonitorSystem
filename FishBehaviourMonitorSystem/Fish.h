@@ -2,6 +2,7 @@
 #include <cv.h>
 #include <math.h>
 #include <iostream>
+#include <vector>
 
 
 class Fish
@@ -23,6 +24,8 @@ public:
 	}
 
 	Fish(CvSeq *cont);
+
+	Fish(const std::vector<cv::Point> &contours);
 
 	Fish(const Fish &fish)
 	{

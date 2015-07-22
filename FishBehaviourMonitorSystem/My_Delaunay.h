@@ -12,7 +12,9 @@ public:
 	~My_Delaunay();
 
 	void set_points(vector<CvPoint> &);
+	void set_points(vector<cv::Point> &);
 	int draw_subdiv(IplImage *, Scalar, int);
+	int draw_subdiv(cv::Mat &, Scalar, int);
 	CvPoint Get_Center();
 private:
 

@@ -138,15 +138,17 @@ void VideoProcessing::time_out_todo_1()
 		if (_isPrecess){
 			ImgProcessing(_frame, _p_temp, _frame);
 			if (_img_process_set->get_num_fish() == 1){
-				//double speed = _mode_processing->execute(_p_temp, _frame, _img_process_set->get_min_area());
-				//double wp = _mode_processing_wp->execute(_p_temp, _frame, _img_process_set->get_min_area());
-				//send_data(1, speed / (640 / this->_sys_set->get_realLength()));
-				//send_data(2, wp);
+				
+				double speed = _mode_processing->execute(_p_temp, _frame, _img_process_set->get_min_area());
+				double wp = _mode_processing_wp->execute(_p_temp, _frame, _img_process_set->get_min_area());
+				send_data(1, speed / (640 / this->_sys_set->get_realLength()));
+				send_data(2, wp);
+				
 			}
 			else if (_img_process_set->get_num_fish() > 1)
 			{
-				//double r = _mode_processing_Cluster->execute(_p_temp, _frame, _img_process_set->get_min_area());
-				//send_data(3, r);
+				double r = _mode_processing_Cluster->execute(_p_temp, _frame, _img_process_set->get_min_area());
+				send_data(3, r);
 			}
 
 			// 如果开始记录
