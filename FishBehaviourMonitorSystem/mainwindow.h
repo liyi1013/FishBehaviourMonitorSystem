@@ -38,6 +38,7 @@ private:
 	//QAction *newMonitor;
 	QAction *opencamera;  // 1 打开摄像头
 	QAction *openfile;    // 1 打开文件
+	QAction *background_pickup_Act;    // 1-2 提取背景
 	QAction *startAct;    // 2 开始处理
 	QAction *recodeAct;   // 3 开始记录
 	QAction *endAct;      // 4 结束处理
@@ -99,6 +100,7 @@ public:	//给 video_processing 调用
 public slots:
 	void open_camera();
 	void open_file();
+	void background_pickup();
 	void process_start();
 	void process_end();
 	void record();

@@ -25,6 +25,41 @@ static void ErodeDilate(cv::Mat &src, cv::Mat &dst, int n = 9 - 10)
 		dilate(src, dst, element);
 }
 
+
+cv::Mat get_contours_colors(cv::Mat &src,cv::Mat background){
+	cv::Mat dst;
+	src.copyTo(dst);
+
+	int height1 = src.size().height;
+	int width1 = src.size().width;
+	for (int k = 0; k < height1; k++)
+	{
+		for (int l = 0; l < width1; l++)
+		{
+			const cv::Vec3b& bgr = src.at<cv::Vec3b>(k,l);
+			int b1 = bgr[0];//B
+			int g1 = bgr[1];//G
+			int r1 = bgr[2];//R
+
+			// 根据颜色通道信息判断目标
+			if ((0<=r1) && (r1<30) && (0<=g1) && (g1<30) && (0<=b1) && (b1<30))
+			{
+				dst.at<cv::Vec3b>(k, l)[0] = 0;
+				dst.at<cv::Vec3b>(k, l)[1] = 0;
+				dst.at<cv::Vec3b>(k, l)[2] = 0;
+			}
+			else
+			{
+				dst.at<cv::Vec3b>(k, l)[0] = 255;
+				dst.at<cv::Vec3b>(k, l)[1] = 255;
+				dst.at<cv::Vec3b>(k, l)[2] = 255;
+			}
+		}
+	} //根据颜色二值化完毕。 */
+	return dst;
+}
+
+
 VideoProcessing::VideoProcessing(QObject *parent, SystemSet *set, SysDB* sys_db, ImgProcessSet  *img_p_set)
 	:QObject(parent), _fps(15), _codec(CV_FOURCC('D', 'I', 'V', 'X')), _sys_set(set), _sys_db(sys_db), _img_process_set(img_p_set)
 {
@@ -76,31 +111,44 @@ IplImage* VideoProcessing::ImgProcessing(IplImage *src, IplImage *dst, IplImage 
 
 cv::Mat VideoProcessing::ImgProcessing(cv::Mat &src, cv::Mat &dst, cv::Mat &img_draw)
 {
+	/*
 	// 图片预处理，转化成灰度图像
 	if (src.channels() > 1){
 		cvtColor(src, dst, CV_BGR2GRAY);  // 彩色图像转化成灰度图像
 	}
-	
+	*/
+
+	src = src - _background;
+	cv::imshow("Display Image3", src);
+
+	cv::Mat temp=get_contours_colors(src, src);
+	cvtColor(temp, dst, CV_BGR2GRAY);  // 彩色图像转化成灰度图像
+
 	GaussianBlur(dst, dst, cv::Size(5,5), 0, 0); //高斯滤波
 
-	//bitwise_xor(Scalar(255, 0, 0, 0), dst, dst);//xor,颜色取反
+	
+	//bitwise_xor(cv::Scalar(255, 0, 0, 0), dst, dst);//xor,颜色取反
+
 
 	// 图片 阈值分割
-	//cvThreshold(dst, dst, _img_process_set->get_segment_threshold(), 255, CV_THRESH_BINARY); //取阀值把图像转为二值图像
-	threshold(dst, dst, _img_process_set->get_segment_threshold(), 255, 0);//阈值分割
+	//dst = dst - _background;
+	//threshold(dst, dst, _img_process_set->get_segment_threshold(), 255, 0);//阈值分割
+	
+	//OpenClose(dst, dst);
+	//ErodeDilate(dst, dst);
 
-	OpenClose(dst, dst);
+	bitwise_xor(cv::Scalar(255, 0, 0, 0), dst, dst);//xor,颜色取反
 
-	ErodeDilate(dst, dst);
-
-	//颜色反转
-	//cvNot(dst, dst);
+	cv::imshow("Display Image2", dst);
 
 	return dst;
 }
 
 bool VideoProcessing::open_camera()
 {
+	cv::namedWindow("Display Image", cv::WINDOW_AUTOSIZE);
+	cv::namedWindow("Display Image2", cv::WINDOW_AUTOSIZE);
+	cv::namedWindow("Display Image3", cv::WINDOW_AUTOSIZE);
 	_cap.open(0);
 	if (!_cap.isOpened()){
 		return false;
@@ -131,6 +179,12 @@ bool VideoProcessing::open_file(const char* file_name)
 
 void VideoProcessing::time_out_todo_1()
 {
+
+	if (!_background.empty()){
+
+		cv::imshow("Display Image", _background);
+	}
+	
 	//从CvCapture中获得一帧
 	_cap >> _frame;
 	{
@@ -152,7 +206,8 @@ void VideoProcessing::time_out_todo_1()
 			}
 
 			// 如果开始记录
-			if (_isPrecess && _isRecord)
+			// if (_isPrecess && _isRecord)
+			if (_isRecord)
 			{
 				if (_video_Writer.isOpened()){
 					save_video();//保存视频
@@ -291,6 +346,7 @@ inline bool VideoProcessing::save_video(){
 		return false;
 	}
 	_video_Writer << _frame;
+	++_num_of_frames_recoded;
 	return true;
 }
 
@@ -311,7 +367,6 @@ void VideoProcessing::process_end()
 	}
 	_sys_db->InsertNewRecord_endtime(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm"), _video_id);
 }
-
 
 void VideoProcessing::process_begin()
 {
@@ -357,4 +412,49 @@ bool VideoProcessing::record(){
 		}
 	}
 	return false;
+}
+
+//提取背景
+cv::Mat VideoProcessing::background_pickup(){
+	_cap >> _frame;
+	//cvtColor(_frame, temp, CV_BGR2GRAY);  // 彩色图像转化成灰度图像
+	cv::Mat background(_frame);
+	for (size_t i = 0; i < 15; ++i)
+	{
+		_cap >> _frame;
+		if (i % 5 == 0)
+		{
+			int height1 = _frame.size().height;
+			int width1 = _frame.size().width;
+			for (int k = 0; k < height1; k++)
+			{
+				for (int l = 0; l < width1; l++)
+				{
+					const cv::Vec3b& bgr = _frame.at<cv::Vec3b>(k, l);
+					int b1 = bgr[0];//B
+					int g1 = bgr[1];//G
+					int r1 = bgr[2];//R
+					cv::Vec3b& bgr2 = background.at<cv::Vec3b>(k, l);
+					int b2 = bgr2[0];//B
+					int g2 = bgr2[1];//G
+					int r2 = bgr2[2];//R
+
+					if (abs(b1 - b2) > 10 && abs(g1 - g2) > 10 && abs(g1 - g2) > 10){
+						bgr2[0] += b1;
+						bgr2[1] += g1;
+						bgr2[2] += r1;
+					}
+				}
+			}
+			/*
+				cvtColor(_frame, temp, CV_BGR2GRAY);  // 彩色图像转化成灰度图像
+				{
+				background = background*0.95 + _frame*0.05;
+				}
+				*/
+		}
+	}
+	background.copyTo(this->_background);
+	cv::imwrite("background.bmp", background);
+	return background;
 }

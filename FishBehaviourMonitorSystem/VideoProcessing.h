@@ -42,7 +42,7 @@ private:
 public:
 	bool open_file(const char* file_name);//0
 	bool open_camera();                   //0 打开摄像头，一直获取原始图像，直到开始处理
-
+	cv::Mat background_pickup();  //提取背景
 	void time_out_todo_1();   //设置定时器，时间一到就执行相应函数
 
 public:
@@ -70,7 +70,11 @@ private:
 	IplImage     *_target_Img;//4储存处理后的图像
 	//IplImage     *_p_temp;    //3中间存储图片
 
+	//背景图片，灰度
+	cv::Mat _background;
+
 	int _num_of_frames = 0;
+	unsigned int _num_of_frames_recoded = 0;
 
 	// mode_processings
 	mode_processing* _mode_processing;

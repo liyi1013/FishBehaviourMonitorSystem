@@ -155,6 +155,10 @@ void MainWindow::createActions()
 	exitAct->setStatusTip(tr("退出"));
 	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
+	background_pickup_Act = new QAction(QIcon("images/background_pickup.ico"), tr("&背景提取"), this);
+	background_pickup_Act->setStatusTip(tr("背景提取"));
+	connect(background_pickup_Act, SIGNAL(triggered()), this, SLOT(background_pickup()));
+
 	startAct = new QAction(QIcon("images/start.ico"), tr("&开始处理"), this);
 	startAct->setStatusTip(tr("开始处理"));
 	connect(startAct, SIGNAL(triggered()), this, SLOT(process_start()));
@@ -223,6 +227,7 @@ void MainWindow::setupToolBar()
 
 	editToolBar = addToolBar(tr("Edit"));
 	editToolBar->addAction(startAct);
+	editToolBar->addAction(background_pickup_Act);
 	editToolBar->addAction(recodeAct);
 	editToolBar->addAction(endAct);
 
@@ -393,4 +398,14 @@ void MainWindow::set_view_default()
 	{
 		dock_img_process_set->show();
 	}
+}
+
+// 提取背景 -> return cv::Mat@bakground
+// 前提：摄像头打开 open_camera()
+void MainWindow::background_pickup(){
+
+	this->_video_processing->background_pickup();
+
+	//this->opencamera->setEnabled(false);
+	//startAct->setEnabled(true);
 }
