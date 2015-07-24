@@ -54,6 +54,8 @@ public:
 	// [2]更新结束时间
 	bool InsertNewRecord_endtime(QString time_end, QString video_id);
 
+	QString get_del_file_name();
+
 signals:
 	void DBChanged(); // 数据库内容发生变化  //只在内部发出
 

@@ -27,6 +27,10 @@ class UnitInfoPage;
 class VideoSetPage;
 class MonitorSetPage;
 
+// ∑µªÿ”≤≈Ã»›¡ø
+int get_remain_storage(QString path);
+
+
 class SystemSet : public QObject
 {
 	Q_OBJECT

@@ -345,8 +345,27 @@ inline bool VideoProcessing::save_video(){
 	{
 		return false;
 	}
-	_video_Writer << _frame;
-	++_num_of_frames_recoded;
+	if (_num_of_frames_recoded > 15*60*60*24 ){ //15*60*60*24 one day
+		_video_Writer.release();
+		_num_of_frames_recoded = 0;
+
+		int storage = get_remain_storage(this->_sys_set->get_file_save_path());
+
+		if (storage < 5){  //5:硬盘剩余空间小于5G
+			// 删除最早的文件
+			QString file_del = this->_sys_db->get_del_file_name();
+			if (!file_del.isEmpty()){
+				QFile fileTemp(file_del);
+				fileTemp.remove();
+			}
+		}
+
+		this->record();
+	}
+	else{
+		_video_Writer << _frame;
+		++_num_of_frames_recoded;
+	}
 	return true;
 }
 

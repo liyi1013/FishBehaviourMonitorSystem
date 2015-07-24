@@ -108,13 +108,14 @@ bool SysDB::Insert_warning(int monitor_id, QString video_id, int mode){
 // 2015-06-12 20:10
 bool SysDB::InsertNewRecord(QString video_id, const QString &path, int num_fish, QString time_begin, const QString &remark){
 	QSqlQuery query;
-	if (query.exec(tr("INSERT INTO record_tab VALUES ('%1','%2','%3','%4','%5','%6')")
+	if (query.exec(tr("INSERT INTO record_tab VALUES ('%1','%2','%3','%4','%5','%6','%7')")
 		.arg(video_id)
 		.arg(path)
 		.arg(num_fish)
 		.arg(time_begin)
 		.arg(time_begin)
 		.arg(remark)
+		.arg(0)
 		)){
 		emit DBChanged();
 		return true;
@@ -142,6 +143,24 @@ bool SysDB::InsertNewRecord_endtime(QString time_end, QString video_id)
 		return false;
 	}
 }
+
+// 有问题，得到的是“.avi”
+QString SysDB::get_del_file_name(){
+	QSqlQuery query;
+	QString path;
+	QString name;
+	if (query.exec(tr("select path,video_id from record_tab where flag>=0 order by video_id"))){
+		while (query.next()){
+			path = query.value(0).toString();
+			name = query.value(1).toString();
+			query.exec(tr("update record_tab set flag = -1 where video_id = '%1'").arg(name));
+			name += ".avi";
+			break;
+		}
+	}
+	return path + name;
+}
+
 /***************************************************************************/
 
 SysDB_view* SysDB_view::_instance = nullptr;

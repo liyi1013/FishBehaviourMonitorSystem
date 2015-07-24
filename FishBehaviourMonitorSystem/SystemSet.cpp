@@ -468,16 +468,23 @@ QString SystemSetView_dock::set_path(){
 	ui_video_save_path->setText(dir);
 
 	//ÏÔÊ¾Ê£ÓàÈÝÁ¿
-	unsigned long long freeBytesToCaller = 0, totalBytes = 0, freeBytes = 0;
-	bool b;
-	b = GetDiskFreeSpaceEx(QString(dir[0] + ":/").toStdWString().c_str(), (PULARGE_INTEGER)&freeBytesToCaller,
-		(PULARGE_INTEGER)&totalBytes, (PULARGE_INTEGER)&freeBytes);
-
-	if (b){
-		ui_remaining_space->setText(tr("<font color='#006600'>%0GB").arg(freeBytesToCaller / 1024.0 / 1024.0 / 1024.0));
-	}
+	int storage = get_remain_storage(dir);
+	ui_remaining_space->setText(tr("<font color='#006600'>%0GB").arg(storage));
 
 	return dir;
+}
+int get_remain_storage(QString path){
+	int storage = 0;
+	if (!path.isEmpty()){
+		unsigned long long freeBytesToCaller = 0, totalBytes = 0, freeBytes = 0;
+		bool b;
+		b = GetDiskFreeSpaceEx(QString(path[0] + ":/").toStdWString().c_str(), (PULARGE_INTEGER)&freeBytesToCaller,
+			(PULARGE_INTEGER)&totalBytes, (PULARGE_INTEGER)&freeBytes);
+		if (b){
+			storage = freeBytesToCaller / 1024.0 / 1024.0 / 1024.0;
+		}
+	}
+	return storage;
 }
 
 
