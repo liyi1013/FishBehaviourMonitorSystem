@@ -24,6 +24,8 @@ class QMessageBox;
 
 #include"ImgProcessSet.h"
 
+#include "LoadingDialog.h"
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT

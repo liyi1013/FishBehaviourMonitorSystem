@@ -23,6 +23,8 @@ class SysDB;
 
 class VideoProcessing : public QObject
 {
+	Q_OBJECT
+
 public:
 	VideoProcessing(QObject *parent = 0, SystemSet *set = 0, SysDB* sys_db = 0,ImgProcessSet  *img_p_set=0);
 	~VideoProcessing();
@@ -43,6 +45,10 @@ public:
 	bool open_file(const char* file_name);//0
 	bool open_camera();                   //0 打开摄像头，一直获取原始图像，直到开始处理
 	cv::Mat background_pickup();  //提取背景
+signals:
+	void background_pickup_done();
+
+public:
 	void time_out_todo_1();   //设置定时器，时间一到就执行相应函数
 
 public:

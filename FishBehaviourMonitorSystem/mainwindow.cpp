@@ -155,7 +155,7 @@ void MainWindow::createActions()
 	exitAct->setStatusTip(tr("退出"));
 	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
-	background_pickup_Act = new QAction(QIcon("images/background_pickup.ico"), tr("&背景提取"), this);
+	background_pickup_Act = new QAction(QIcon("images/background_pickup.png"), tr("&背景提取"), this);
 	background_pickup_Act->setStatusTip(tr("背景提取"));
 	connect(background_pickup_Act, SIGNAL(triggered()), this, SLOT(background_pickup()));
 
@@ -403,6 +403,14 @@ void MainWindow::set_view_default()
 // 提取背景 -> return cv::Mat@bakground
 // 前提：摄像头打开 open_camera()
 void MainWindow::background_pickup(){
+	LoadingDialog *loading_dialog = new LoadingDialog(0, tr("背景提取中..."));
+	QThread* thread = new QThread;
+	loading_dialog->moveToThread(thread);
+
+	connect(this->_video_processing, &VideoProcessing::background_pickup_done, loading_dialog, &LoadingDialog::close);
+
+	thread->start();
+	loading_dialog->exec();
 
 	this->_video_processing->background_pickup();
 

@@ -475,5 +475,6 @@ cv::Mat VideoProcessing::background_pickup(){
 	}
 	background.copyTo(this->_background);
 	cv::imwrite("background.bmp", background);
+	emit background_pickup_done();
 	return background;
 }
