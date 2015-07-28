@@ -25,7 +25,6 @@ static void ErodeDilate(cv::Mat &src, cv::Mat &dst, int n = 9 - 10)
 		dilate(src, dst, element);
 }
 
-
 cv::Mat get_contours_colors(cv::Mat &src,cv::Mat background){
 	cv::Mat dst;
 	src.copyTo(dst);
@@ -58,7 +57,6 @@ cv::Mat get_contours_colors(cv::Mat &src,cv::Mat background){
 	} //根据颜色二值化完毕。 */
 	return dst;
 }
-
 
 VideoProcessing::VideoProcessing(QObject *parent, SystemSet *set, SysDB* sys_db, ImgProcessSet  *img_p_set)
 	:QObject(parent), _fps(15), _codec(CV_FOURCC('D', 'I', 'V', 'X')), _sys_set(set), _sys_db(sys_db), _img_process_set(img_p_set)
@@ -189,7 +187,8 @@ void VideoProcessing::time_out_todo_1()
 	_cap >> _frame;
 	{
 		// 如果开始处理
-		if (_isPrecess){
+		if (_isPrecess)
+		{
 			ImgProcessing(_frame, _p_temp, _frame);
 			if (_img_process_set->get_num_fish() == 1){
 				
@@ -204,20 +203,19 @@ void VideoProcessing::time_out_todo_1()
 				double r = _mode_processing_Cluster->execute(_p_temp, _frame, _img_process_set->get_min_area());
 				send_data(3, r);
 			}
-
-			// 如果开始记录
-			// if (_isPrecess && _isRecord)
-			if (_isRecord)
+		}
+		// 如果开始记录
+		if (_isRecord)
+		{
+			if (_video_Writer.isOpened()){
+				save_video();//保存视频
+			}
+			else
 			{
-				if (_video_Writer.isOpened()){
-					save_video();//保存视频
-				}
-				else
-				{
-					this->_main_window->statusBar()->showMessage(tr("无法保存视频"));
-				}
+				this->_main_window->statusBar()->showMessage(tr("无法保存视频"));
 			}
 		}
+
 		++_num_of_frames;
 		this->notify();
 	}

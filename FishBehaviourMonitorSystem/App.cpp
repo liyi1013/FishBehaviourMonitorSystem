@@ -17,6 +17,8 @@ App::App()
 	_video_processing->moveToThread(_thread_videoprocessing);
 	_thread_videoprocessing->start();
 
+	_water_taking_siganl_sender = new SendWaterTakingSignal();
+
 	//main_window->showFullScreen();//无边框，最大化，无最小化最大化窗口
 	_main_window->showMaximized();
 

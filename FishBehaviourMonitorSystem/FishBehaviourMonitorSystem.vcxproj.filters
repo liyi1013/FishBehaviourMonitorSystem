@@ -140,6 +140,12 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_VideoProcessing.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="sendwatertakingsignal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="masterthread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="mainwindow.h">
@@ -206,5 +212,13 @@
     <CustomBuild Include="GeneratedFiles\ui_mainwindow.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sendwatertakingsignal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="masterthread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

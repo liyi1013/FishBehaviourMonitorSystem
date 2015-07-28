@@ -52,6 +52,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -60,6 +61,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>D:\Qt\Qt5.5.0\5.5\msvc2013\lib\qtmaind.lib;D:\Qt\Qt5.5.0\5.5\msvc2013\lib\Qt5Cored.lib;D:\Qt\Qt5.5.0\5.5\msvc2013\lib\Qt5Guid.lib;D:\Qt\Qt5.5.0\5.5\msvc2013\lib\Qt5Sqld.lib;D:\Qt\Qt5.5.0\5.5\msvc2013\lib\Qt5PrintSupportd.lib;D:\Qt\Qt5.5.0\5.5\msvc2013\lib\Qt5Widgetsd.lib;opencv_calib3d248d.lib;opencv_contrib248d.lib;opencv_core248d.lib;opencv_features2d248d.lib;opencv_flann248d.lib;opencv_gpu248d.lib;opencv_highgui248d.lib;opencv_imgproc248d.lib;opencv_legacy248d.lib;opencv_ml248d.lib;opencv_nonfree248d.lib;opencv_objdetect248d.lib;opencv_ocl248d.lib;opencv_photo248d.lib;opencv_stitching248d.lib;opencv_superres248d.lib;opencv_ts248d.lib;opencv_video248d.lib;opencv_videostab248d.lib;opencv_calib3d248.lib;opencv_contrib248.lib;opencv_core248.lib;opencv_features2d248.lib;opencv_flann248.lib;opencv_gpu248.lib;opencv_highgui248.lib;opencv_imgproc248.lib;opencv_legacy248.lib;opencv_ml248.lib;opencv_nonfree248.lib;opencv_objdetect248.lib;opencv_ocl248.lib;opencv_photo248.lib;opencv_stitching248.lib;opencv_superres248.lib;opencv_ts248.lib;opencv_video248.lib;opencv_videostab248.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -135,12 +139,14 @@
     <ClCompile Include="LoadingDialog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainwindow.cpp" />
+    <ClCompile Include="masterthread.cpp" />
     <ClCompile Include="mode_processing.cpp" />
     <ClCompile Include="MyVideoPlayer.cpp" />
     <ClCompile Include="My_Delaunay.cpp" />
     <ClCompile Include="NewMonitor_dlg.cpp" />
     <ClCompile Include="plotdata.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
+    <ClCompile Include="sendwatertakingsignal.cpp" />
     <ClCompile Include="SystemDB.cpp" />
     <ClCompile Include="SystemSet.cpp" />
     <ClCompile Include="VideoDataDisplayer.cpp" />
@@ -454,6 +460,10 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </AdditionalInputs>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="masterthread.h" />
+    <ClInclude Include="sendwatertakingsignal.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
