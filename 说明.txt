@@ -1,9 +1,6 @@
-﻿ÔÚsystem_item_5_8
+ÔÚsystem_item_5_8
 ÉÏ¸Ä½ø£¬ÐÞ¸Ä¶øÀ´
 
 update£º2015-07-07
 
 c++ style 
-
-
-from "FishBehaviourMonitorSystem_7_10c++style",chonggou
